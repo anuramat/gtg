@@ -1,0 +1,10 @@
+walk = "git"
+
+[formatter.nix]
+command = "nixfmt"
+includes = [ "*.nix" ]
+
+[formatter.python]
+command = "black"
+includes = [ "*.py" ]
+options = [ "-q" ]
