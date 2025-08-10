@@ -1,6 +1,7 @@
 """Main CLI interface for GTG stream notifier"""
 
 import asyncio
+import logging
 import sys
 
 import click
@@ -14,9 +15,17 @@ from .commands.oauth import run_oauth
 
 @click.group()
 @click.version_option()
-def cli():
+@click.option("--verbose", is_flag=True, help="Enable verbose logging")
+def cli(verbose):
     """GTG - Stream notification system for Twitch"""
-    pass
+    level = logging.DEBUG if verbose else logging.ERROR
+    logging.basicConfig(level=level, format="%(levelname)s: %(message)s")
+
+    # Set third-party library logging to ERROR unless verbose
+    if not verbose:
+        logging.getLogger("twitchio").setLevel(logging.ERROR)
+        logging.getLogger("aiohttp").setLevel(logging.ERROR)
+        logging.getLogger("websockets").setLevel(logging.ERROR)
 
 
 @cli.command()
