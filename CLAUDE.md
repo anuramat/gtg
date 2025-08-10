@@ -12,21 +12,49 @@ This project uses **Nix flakes** for reproducible development environments. All 
 # Enter development shell with all dependencies
 nix develop
 
-# Run any stream notifier (inside dev shell)
-python stream_notifier_broadcast.py        # Recommended: broadcasts to all chats
-python stream_notifier_telegram.py         # Single chat version
-python stream_notifier_oauth.py           # OAuth-based with web auth
+# GTG CLI - Unified stream notifier with subcommands (inside dev shell)
+python gtg.py broadcast              # Recommended: broadcasts to all Telegram chats
+python gtg.py single-chat            # Single chat version
+python gtg.py oauth                  # OAuth-based with web auth
+python gtg.py get-user-id <username> # Convert Twitch username to user ID
+
+# Alternative execution method
+python -m gtg <command>               # Module execution style
 
 # Format code (runs automatically on commit via treefmt hook)
-nix fmt                                    # Formats Python (black) and Nix (nixfmt)
+nix fmt                              # Formats Python (black) and Nix (nixfmt)
 
-# Convert Twitch username to user ID
-python get_user_id.py <username>
+# Legacy standalone scripts (deprecated, use GTG CLI instead)
+python stream_notifier_broadcast.py  # Use: gtg broadcast
+python stream_notifier_telegram.py   # Use: gtg single-chat
+python stream_notifier_oauth.py      # Use: gtg oauth
+python get_user_id.py <username>     # Use: gtg get-user-id
 ```
 
 ## Architecture Overview
 
-This is a **Twitch stream notification system** with multiple implementations, all sharing the same core pattern:
+This is a **unified Twitch stream notification CLI** (`gtg`) that consolidates multiple notification strategies into a single command-line interface.
+
+### GTG CLI Structure
+
+```
+gtg/
+├── cli.py                    # Main CLI entry point with Click commands
+├── core/                     # Shared core components
+│   ├── twitch.py            # BaseTwitchNotifier - common AutoBot patterns
+│   ├── notifications.py     # Desktop notification functions
+│   └── config.py            # Environment variable handling
+├── telegram/                 # Telegram notification strategies
+│   ├── base.py              # TelegramNotifier abstract interface
+│   ├── single.py            # SingleChatNotifier implementation
+│   ├── broadcast.py         # BroadcastNotifier with chat discovery
+│   └── chat_manager.py      # Persistent chat storage management
+└── commands/                 # CLI subcommand implementations
+    ├── broadcast.py         # gtg broadcast - auto-discovers Telegram chats
+    ├── single_chat.py       # gtg single-chat - single chat notifications
+    ├── oauth.py             # gtg oauth - OAuth web authentication flow
+    └── user_id.py           # gtg get-user-id - username to ID conversion
+```
 
 ### Core Components
 
@@ -34,11 +62,12 @@ This is a **Twitch stream notification system** with multiple implementations, a
 2. **Notification Backends**: Desktop (`notify-send`) + Telegram messaging  
 3. **Event Subscriptions**: `StreamOnlineSubscription`, `StreamOfflineSubscription`, optional `ChatMessageSubscription`
 
-### Implementation Variants
+### CLI Commands
 
-- **`stream_notifier_broadcast.py`** - **Recommended**: Auto-discovers and broadcasts to all Telegram chats the bot is in
-- **`stream_notifier_telegram.py`** - Single chat version requiring `TELEGRAM_CHAT_ID`
-- **`stream_notifier_oauth.py`** - OAuth-based with web authentication flow for chat monitoring
+- **`gtg broadcast`** - **Recommended**: Auto-discovers and broadcasts to all Telegram chats the bot is in
+- **`gtg single-chat`** - Single chat version requiring `TELEGRAM_CHAT_ID`
+- **`gtg oauth`** - OAuth-based with web authentication flow for chat monitoring
+- **`gtg get-user-id <username>`** - Convert Twitch username to user ID
 
 ### Key Architectural Patterns
 
@@ -53,12 +82,18 @@ This is a **Twitch stream notification system** with multiple implementations, a
 
 ## Environment Configuration
 
-Required environment variables are documented in `.env.example`. The broadcast version only needs:
-- Twitch app credentials (`TWITCH_CLIENT_ID`, `TWITCH_CLIENT_SECRET`)  
-- Target streamer user ID (`TWITCH_TARGET_USER`)
-- Telegram bot token (`TELEGRAM_BOT_TOKEN`)
+Required environment variables are documented in `.env.example`. Each command requires different variables:
 
-Optional: `TWITCH_BOT_ID` enables Twitch chat monitoring (requires more complex OAuth setup).
+**All commands:**
+- `TWITCH_CLIENT_ID`, `TWITCH_CLIENT_SECRET` - Twitch app credentials
+
+**Stream monitoring commands (broadcast, single-chat, oauth):**
+- `TWITCH_TARGET_USER` - Target streamer user ID to monitor
+- `TELEGRAM_BOT_TOKEN` - Telegram bot token (except oauth without Telegram)
+- `TELEGRAM_CHAT_ID` - Required only for `single-chat` command
+
+**Optional:**
+- `TWITCH_BOT_ID` - Enables Twitch chat monitoring (requires OAuth setup)
 
 ## Code Formatting
 
