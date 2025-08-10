@@ -24,6 +24,7 @@ def cli(verbose):
     # Set third-party library logging to ERROR unless verbose
     if not verbose:
         logging.getLogger("twitchio").setLevel(logging.ERROR)
+        logging.getLogger("twitchio.web").setLevel(logging.ERROR)
         logging.getLogger("aiohttp").setLevel(logging.ERROR)
         logging.getLogger("websockets").setLevel(logging.ERROR)
 
