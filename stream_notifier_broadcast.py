@@ -193,15 +193,45 @@ class TelegramBroadcastNotifier(commands.AutoBot):
         title = getattr(payload, "title", "Stream")
         category = getattr(payload, "category_name", "")
 
-        # Build Telegram message
+        # Escape Markdown characters to prevent parsing errors
+        def escape_markdown(text):
+            """Escape special Markdown characters"""
+            chars = [
+                "*",
+                "_",
+                "[",
+                "]",
+                "(",
+                ")",
+                "~",
+                "`",
+                ">",
+                "#",
+                "+",
+                "-",
+                "=",
+                "|",
+                "{",
+                "}",
+                ".",
+                "!",
+            ]
+            for char in chars:
+                text = text.replace(char, f"\\{char}")
+            return text
+
+        # Build Telegram message with escaped content
+        escaped_title = escape_markdown(title)
+        escaped_category = escape_markdown(category) if category else ""
+
         telegram_message = f"🔴 *{streamer_name} is LIVE!*\n\n"
-        telegram_message += f"📺 {title}\n"
-        if category:
-            telegram_message += f"🎮 Playing: {category}\n"
-        telegram_message += f"🔗 https://twitch.tv/{payload.broadcaster.name}"
+        telegram_message += f"📺 {escaped_title}\n"
+        if escaped_category:
+            telegram_message += f"🎮 Playing: {escaped_category}\n"
+        telegram_message += f"🔗 https://twitch\\.tv/{payload.broadcaster.name}"
 
         # Broadcast to all chats
-        await self.broadcast_message(telegram_message, parse_mode="Markdown")
+        await self.broadcast_message(telegram_message, parse_mode="MarkdownV2")
 
         # Also send desktop notification
         notification_body = title
