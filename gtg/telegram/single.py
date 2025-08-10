@@ -28,7 +28,7 @@ class SingleChatNotifier(TelegramNotifier):
             print(f"[TELEGRAM] Message sent successfully")
             return True
         except TelegramError as e:
-            self.handle_telegram_error(
+            await self.handle_telegram_error(
                 e, int(self.chat_id) if self.chat_id.lstrip("-").isdigit() else None
             )
             return False

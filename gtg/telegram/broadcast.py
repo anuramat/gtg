@@ -47,7 +47,7 @@ class BroadcastNotifier(TelegramNotifier):
                 )
                 success_count += 1
             except TelegramError as e:
-                if self.handle_telegram_error(e, chat_id):
+                if await self.handle_telegram_error(e, chat_id):
                     invalid_chats.add(chat_id)
 
         # Remove invalid chats
