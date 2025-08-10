@@ -91,7 +91,8 @@ class BaseTwitchNotifier(commands.AutoBot, ABC):
 
         await self.on_chat_message(payload)
 
-    def _get_user_prefix(self, chatter) -> str:
+    @staticmethod
+    def _get_user_prefix(chatter) -> str:
         """Get user type prefix for chat messages"""
         if chatter.broadcaster:
             return "[STREAMER]"

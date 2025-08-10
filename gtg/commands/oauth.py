@@ -112,16 +112,10 @@ class OAuthStreamNotifier(commands.AutoBot):
         """Handle chat messages"""
         timestamp = datetime.datetime.now().strftime("%H:%M:%S")
 
-        # Determine user type
-        if payload.chatter.broadcaster:
-            prefix = "[STREAMER]"
-        elif payload.chatter.moderator:
-            prefix = "[MOD]"
-        elif payload.chatter.subscriber:
-            prefix = "[SUB]"
-        else:
-            prefix = "[CHAT]"
+        # Use shared user prefix logic
+        from ..core.twitch import BaseTwitchNotifier
 
+        prefix = BaseTwitchNotifier._get_user_prefix(payload.chatter)
         display_name = payload.chatter.display_name
         message_text = payload.text
 
@@ -135,7 +129,7 @@ class OAuthStreamNotifier(commands.AutoBot):
         """Send desktop notification using notify-send"""
         body = title
         if category:
-            body += f"\\nPlaying: {category}"
+            body += f"\nPlaying: {category}"
 
         send_desktop_notification(f"{streamer_name} is LIVE!", body, urgency="critical")
 

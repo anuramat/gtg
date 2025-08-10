@@ -24,11 +24,8 @@ python -m gtg <command>               # Module execution style
 # Format code (runs automatically on commit via treefmt hook)
 nix fmt                              # Formats Python (black) and Nix (nixfmt)
 
-# Legacy standalone scripts (deprecated, use GTG CLI instead)
-python stream_notifier_broadcast.py  # Use: gtg broadcast
-python stream_notifier_telegram.py   # Use: gtg single-chat
-python stream_notifier_oauth.py      # Use: gtg oauth
-python get_user_id.py <username>     # Use: gtg get-user-id
+# Validate flake
+nix flake check                      # Check flake for issues
 ```
 
 ## Architecture Overview
@@ -98,6 +95,13 @@ Required environment variables are documented in `.env.example`. Each command re
 ## Code Formatting
 
 The repository uses **treefmt** with Black for Python and nixfmt for Nix files. Formatting runs automatically on git commits via pre-commit hooks. The `treefmt.toml` configuration enforces consistent code style across all Python files.
+
+### Acceptance Criteria
+
+**Primary:** `nix fmt` succeeds (code formatting passes)
+**Secondary:** All CLI commands execute without errors in `nix develop` shell
+
+No formal test suite exists - validation is primarily through manual testing of CLI commands.
 
 ## Telegram Bot Setup
 
