@@ -36,12 +36,12 @@ class TelegramNotifier(ABC):
         self, streamer_name: str, title: str, category: str, twitch_url: str
     ) -> str:
         """Format stream online message with proper Telegram markdown escaping"""
-        escaped_title = escape_markdown(title)
-        escaped_category = escape_markdown(category) if category else ""
 
-        return f"""💊 {streamer_name} is LIVE 💊
-{escaped_title}/{escaped_category if escaped_category else ""}
-{twitch_url}""".strip()
+        return escape_markdown(
+            f"""💊 {streamer_name} is LIVE 💊
+{twitch_url}""",
+            version=2,
+        )
 
     async def handle_telegram_error(
         self, error: TelegramError, chat_id: Optional[int] = None
