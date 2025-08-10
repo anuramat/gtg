@@ -31,6 +31,7 @@
         pythonDeps = p: [
           twitchio
           p.python-telegram-bot
+          p.click
         ];
       in
       {
