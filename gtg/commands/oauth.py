@@ -10,6 +10,7 @@ from twitchio import eventsub
 from twitchio.ext import commands
 
 from ..core.config import load_config
+from ..core.notifications import send_desktop_notification
 from ..telegram.single import SingleChatNotifier
 from ..telegram.broadcast import BroadcastNotifier
 
@@ -121,7 +122,14 @@ class OAuthStreamNotifier(commands.AutoBot):
         else:
             prefix = "[CHAT]"
 
-        print(f"[{timestamp}] {prefix} {payload.chatter.display_name}: {payload.text}")
+        display_name = payload.chatter.display_name
+        message_text = payload.text
+
+        print(f"[{timestamp}] {prefix} {display_name}: {message_text}")
+
+        # Send desktop notification for chat messages
+        title = f"{display_name} in chat"
+        send_desktop_notification(title, message_text, urgency="normal")
 
     def _send_desktop_notification(self, streamer_name: str, title: str, category: str):
         """Send desktop notification using notify-send"""
@@ -129,21 +137,7 @@ class OAuthStreamNotifier(commands.AutoBot):
         if category:
             body += f"\\nPlaying: {category}"
 
-        try:
-            subprocess.run(
-                [
-                    "notify-send",
-                    "-u",
-                    "critical",
-                    "-i",
-                    "video-display",
-                    f"{streamer_name} is LIVE!",
-                    body,
-                ],
-                check=True,
-            )
-        except subprocess.CalledProcessError as e:
-            print(f"Failed to send desktop notification: {e}")
+        send_desktop_notification(f"{streamer_name} is LIVE!", body, urgency="critical")
 
     async def cleanup(self):
         """Clean shutdown"""

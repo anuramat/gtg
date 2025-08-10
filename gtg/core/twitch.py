@@ -9,6 +9,8 @@ import twitchio
 from twitchio import eventsub
 from twitchio.ext import commands
 
+from .notifications import send_desktop_notification
+
 
 class BaseTwitchNotifier(commands.AutoBot, ABC):
     """Base class for Twitch stream notifiers using EventSub subscriptions"""
@@ -78,7 +80,15 @@ class BaseTwitchNotifier(commands.AutoBot, ABC):
 
         timestamp = datetime.datetime.now().strftime("%H:%M:%S")
         prefix = self._get_user_prefix(payload.chatter)
-        print(f"[{timestamp}] {prefix} {payload.chatter.display_name}: {payload.text}")
+        display_name = payload.chatter.display_name
+        message_text = payload.text
+
+        print(f"[{timestamp}] {prefix} {display_name}: {message_text}")
+
+        # Send desktop notification for chat messages
+        title = f"{display_name} in chat"
+        send_desktop_notification(title, message_text, urgency="normal")
+
         await self.on_chat_message(payload)
 
     def _get_user_prefix(self, chatter) -> str:
@@ -98,21 +108,7 @@ class BaseTwitchNotifier(commands.AutoBot, ABC):
         if category:
             body += f"\\nPlaying: {category}"
 
-        try:
-            subprocess.run(
-                [
-                    "notify-send",
-                    "-u",
-                    "critical",
-                    "-i",
-                    "video-display",
-                    f"{streamer_name} is LIVE!",
-                    body,
-                ],
-                check=True,
-            )
-        except subprocess.CalledProcessError as e:
-            print(f"Failed to send desktop notification: {e}")
+        send_desktop_notification(f"{streamer_name} is LIVE!", body, urgency="critical")
 
     # Abstract methods to be implemented by subclasses
     @abstractmethod
