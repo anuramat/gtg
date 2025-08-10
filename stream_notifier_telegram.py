@@ -4,14 +4,16 @@ TwitchIO stream notifier with Telegram notifications.
 Sends messages to a Telegram group when the monitored streamer goes live.
 """
 import asyncio
+import datetime
 import os
 import subprocess
-import datetime
+
+import telegram
 import twitchio
+from telegram.error import TelegramError
+from telegram.helpers import escape_markdown
 from twitchio import eventsub
 from twitchio.ext import commands
-import telegram
-from telegram.error import TelegramError
 
 
 class TelegramStreamNotifier(commands.AutoBot):
@@ -82,42 +84,15 @@ class TelegramStreamNotifier(commands.AutoBot):
         title = getattr(payload, "title", "Stream")
         category = getattr(payload, "category_name", "")
 
-        # Escape Markdown characters to prevent parsing errors
-        def escape_markdown(text):
-            """Escape special Markdown characters"""
-            chars = [
-                "*",
-                "_",
-                "[",
-                "]",
-                "(",
-                ")",
-                "~",
-                "`",
-                ">",
-                "#",
-                "+",
-                "-",
-                "=",
-                "|",
-                "{",
-                "}",
-                ".",
-                "!",
-            ]
-            for char in chars:
-                text = text.replace(char, f"\\{char}")
-            return text
-
         # Build Telegram message with escaped content
         escaped_title = escape_markdown(title)
         escaped_category = escape_markdown(category) if category else ""
 
-        telegram_message = f"🔴 *{streamer_name} is LIVE!*\n\n"
-        telegram_message += f"📺 {escaped_title}\n"
-        if escaped_category:
-            telegram_message += f"🎮 Playing: {escaped_category}\n"
-        telegram_message += f"🔗 https://twitch\\.tv/{payload.broadcaster.name}"
+        telegram_message = f"""
+💊 {streamer_name} is LIVE 💊
+{escaped_title}/{escaped_category if escaped_category else ""}
+https://twitch.tv/{payload.broadcaster.name}
+        """.strip()
 
         # Send to Telegram
         await self.send_telegram_message(telegram_message, parse_mode="MarkdownV2")
