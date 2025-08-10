@@ -1,8 +1,109 @@
 #!/usr/bin/env python3
 """
-Example usage of the new GTG base components.
-This shows how existing stream_notifier_*.py scripts could be refactored.
+GTG CLI Usage Examples
+This demonstrates how to use the new GTG command-line interface.
 """
+
+# =============================================================================
+# CLI USAGE EXAMPLES
+# =============================================================================
+
+# 1. Convert Twitch username to user ID (needed for TWITCH_TARGET_USER)
+"""
+export TWITCH_CLIENT_ID="your_client_id"
+export TWITCH_CLIENT_SECRET="your_client_secret"
+
+python gtg.py get-user-id username
+# OR
+python -m gtg get-user-id username
+"""
+
+# 2. Run broadcast notifier (recommended - auto-discovers all chats)
+"""
+export TWITCH_CLIENT_ID="your_client_id"
+export TWITCH_CLIENT_SECRET="your_client_secret"
+export TWITCH_TARGET_USER="123456789"  # Use get-user-id to find this
+export TELEGRAM_BOT_TOKEN="your_bot_token"
+# Optional: export TWITCH_BOT_ID="your_bot_user_id"  # Enables chat monitoring
+
+python gtg.py broadcast
+# OR
+python -m gtg broadcast
+"""
+
+# 3. Run single chat notifier
+"""
+export TWITCH_CLIENT_ID="your_client_id"
+export TWITCH_CLIENT_SECRET="your_client_secret" 
+export TWITCH_TARGET_USER="123456789"
+export TELEGRAM_BOT_TOKEN="your_bot_token"
+export TELEGRAM_CHAT_ID="-1001234567890"  # Your specific chat ID
+# Optional: export TWITCH_BOT_ID="your_bot_user_id"
+
+python gtg.py single-chat
+# OR
+python -m gtg single-chat
+"""
+
+# 4. Run OAuth-based notifier with web authentication
+"""
+export TWITCH_CLIENT_ID="your_client_id"
+export TWITCH_CLIENT_SECRET="your_client_secret"
+export TWITCH_BOT_ID="your_bot_user_id"  # Required for OAuth
+export TELEGRAM_BOT_TOKEN="your_bot_token"
+# Optional: export TELEGRAM_CHAT_ID="-1001234567890"
+
+python gtg.py oauth
+# OR
+python -m gtg oauth
+"""
+
+# =============================================================================
+# SETUP INSTRUCTIONS
+# =============================================================================
+
+"""
+1. Twitch App Setup:
+   - Go to https://dev.twitch.tv/console/apps
+   - Create a new app with OAuth redirect URL: http://localhost:8080/callback
+   - Note your Client ID and Client Secret
+
+2. Telegram Bot Setup:
+   - Message @BotFather on Telegram
+   - Create a new bot with /newbot
+   - Note your bot token
+   - Add the bot to your Telegram groups/chats
+
+3. Environment Variables:
+   - Copy .env.example to .env and fill in your credentials
+   - Or export the variables in your shell
+
+4. Usage:
+   - Use broadcast mode for multiple chats (recommended)
+   - Use single-chat mode if you only want notifications in one specific chat
+   - Use oauth mode if you need advanced Twitch chat monitoring features
+"""
+
+# =============================================================================
+# MIGRATION FROM OLD SCRIPTS
+# =============================================================================
+
+# Old way:
+# python stream_notifier_broadcast.py
+# python stream_notifier_telegram.py
+# python stream_notifier_oauth.py
+# python get_user_id.py username
+
+# New way:
+# python gtg.py broadcast
+# python gtg.py single-chat
+# python gtg.py oauth
+# python gtg.py get-user-id username
+
+# =============================================================================
+# PROGRAMMATIC API EXAMPLES (for developers)
+# =============================================================================
+
 import asyncio
 from typing import Optional
 
@@ -126,7 +227,7 @@ class ExampleStreamNotifier(BaseTwitchNotifier):
         await super().close()
 
 
-# This shows how clean the new usage would be:
+# This shows how clean the programmatic usage would be:
 # notifier = ExampleStreamNotifier(client_id, client_secret, target_user, telegram_token, bot_id)
 # async with notifier:
 #     await notifier.start()
