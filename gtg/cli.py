@@ -7,6 +7,9 @@ import click
 import twitchio
 
 from .core.config import load_config, validate_required
+from .commands.single_chat import run_single_chat
+from .commands.broadcast import run_broadcast
+from .commands.oauth import run_oauth
 
 
 @click.group()
@@ -33,8 +36,7 @@ def broadcast():
     if not validate_required(required):
         sys.exit(1)
 
-    click.echo("Starting broadcast stream notifier...")
-    click.echo("Note: Implementation will be added in Phase 2")
+    asyncio.run(run_broadcast())
 
 
 @cli.command()
@@ -56,8 +58,7 @@ def single_chat():
     if not validate_required(required):
         sys.exit(1)
 
-    click.echo("Starting single-chat stream notifier...")
-    click.echo("Note: Implementation will be added in Phase 2")
+    asyncio.run(run_single_chat())
 
 
 @cli.command()
@@ -65,20 +66,19 @@ def oauth():
     """Run stream notifier with OAuth web authentication
 
     Uses OAuth flow with web interface for authentication.
-    Requires: TWITCH_CLIENT_ID, TWITCH_CLIENT_SECRET, TWITCH_TARGET_USER, TELEGRAM_BOT_TOKEN
+    Requires: TWITCH_CLIENT_ID, TWITCH_CLIENT_SECRET, TWITCH_BOT_ID, TELEGRAM_BOT_TOKEN
     Optional: TELEGRAM_CHAT_ID
     """
     required = [
         "TWITCH_CLIENT_ID",
         "TWITCH_CLIENT_SECRET",
-        "TWITCH_TARGET_USER",
+        "TWITCH_BOT_ID",
         "TELEGRAM_BOT_TOKEN",
     ]
     if not validate_required(required):
         sys.exit(1)
 
-    click.echo("Starting OAuth stream notifier...")
-    click.echo("Note: Implementation will be added in Phase 2")
+    asyncio.run(run_oauth())
 
 
 @cli.command("get-user-id")
