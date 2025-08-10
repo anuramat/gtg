@@ -4,13 +4,20 @@ import asyncio
 import logging
 import sys
 
+# Configure logging early to suppress import warnings
+logging.basicConfig(level=logging.ERROR, format="%(levelname)s: %(message)s")
+logging.getLogger("twitchio").setLevel(logging.ERROR)
+logging.getLogger("twitchio.web").setLevel(logging.ERROR)
+logging.getLogger("aiohttp").setLevel(logging.ERROR)
+logging.getLogger("websockets").setLevel(logging.ERROR)
+
 import click
 import twitchio
 
-from .core.config import load_config, validate_required
-from .commands.single_chat import run_single_chat
 from .commands.broadcast import run_broadcast
 from .commands.oauth import run_oauth
+from .commands.single_chat import run_single_chat
+from .core.config import load_config, validate_required
 
 
 @click.group()
@@ -18,15 +25,12 @@ from .commands.oauth import run_oauth
 @click.option("--verbose", is_flag=True, help="Enable verbose logging")
 def cli(verbose):
     """GTG - Stream notification system for Twitch"""
-    level = logging.DEBUG if verbose else logging.ERROR
-    logging.basicConfig(level=level, format="%(levelname)s: %(message)s")
-
-    # Set third-party library logging to ERROR unless verbose
-    if not verbose:
-        logging.getLogger("twitchio").setLevel(logging.ERROR)
-        logging.getLogger("twitchio.web").setLevel(logging.ERROR)
-        logging.getLogger("aiohttp").setLevel(logging.ERROR)
-        logging.getLogger("websockets").setLevel(logging.ERROR)
+    if verbose:
+        logging.getLogger().setLevel(logging.DEBUG)
+        logging.getLogger("twitchio").setLevel(logging.DEBUG)
+        logging.getLogger("twitchio.web").setLevel(logging.DEBUG)
+        logging.getLogger("aiohttp").setLevel(logging.DEBUG)
+        logging.getLogger("websockets").setLevel(logging.DEBUG)
 
 
 @cli.command()
