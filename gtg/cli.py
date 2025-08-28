@@ -51,7 +51,6 @@ def broadcast():
     asyncio.run(run_broadcast())
 
 
-
 @cli.command("get-user-id")
 @click.argument("username")
 def get_user_id(username: str):

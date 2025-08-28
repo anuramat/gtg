@@ -39,7 +39,6 @@ def validate_required(keys: list[str]) -> bool:
             print("4. Create a Telegram bot via @BotFather")
             print("5. Set TELEGRAM_BOT_TOKEN")
 
-
         print("\nOptional variables:")
         print("  TWITCH_BOT_ID - enables chat monitoring")
 
