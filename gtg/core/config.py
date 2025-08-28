@@ -12,7 +12,6 @@ def load_config() -> dict[str, str | None]:
         "TWITCH_TARGET_USER": os.getenv("TWITCH_TARGET_USER"),
         "TWITCH_BOT_ID": os.getenv("TWITCH_BOT_ID"),
         "TELEGRAM_BOT_TOKEN": os.getenv("TELEGRAM_BOT_TOKEN"),
-        "TELEGRAM_CHAT_ID": os.getenv("TELEGRAM_CHAT_ID"),
     }
 
 
@@ -40,8 +39,6 @@ def validate_required(keys: list[str]) -> bool:
             print("4. Create a Telegram bot via @BotFather")
             print("5. Set TELEGRAM_BOT_TOKEN")
 
-        if "TELEGRAM_CHAT_ID" in missing:
-            print("6. Set TELEGRAM_CHAT_ID (for single-chat mode)")
 
         print("\nOptional variables:")
         print("  TWITCH_BOT_ID - enables chat monitoring")

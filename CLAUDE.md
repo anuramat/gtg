@@ -14,8 +14,6 @@ nix develop
 
 # GTG CLI - Unified stream notifier with subcommands (inside dev shell)
 python gtg.py broadcast              # Recommended: broadcasts to all Telegram chats
-python gtg.py single-chat            # Single chat version
-python gtg.py oauth                  # OAuth-based with web auth
 python gtg.py get-user-id <username> # Convert Twitch username to user ID
 
 # Alternative execution method
@@ -43,14 +41,10 @@ gtg/
 │   └── config.py            # Environment variable handling
 ├── telegram/                 # Telegram notification strategies
 │   ├── base.py              # TelegramNotifier abstract interface
-│   ├── single.py            # SingleChatNotifier implementation
 │   ├── broadcast.py         # BroadcastNotifier with chat discovery
 │   └── chat_manager.py      # Persistent chat storage management
 └── commands/                 # CLI subcommand implementations
-    ├── broadcast.py         # gtg broadcast - auto-discovers Telegram chats
-    ├── single_chat.py       # gtg single-chat - single chat notifications
-    ├── oauth.py             # gtg oauth - OAuth web authentication flow
-    └── user_id.py           # gtg get-user-id - username to ID conversion
+    └── broadcast.py         # gtg broadcast - auto-discovers Telegram chats
 ```
 
 ### Core Components
@@ -62,8 +56,6 @@ gtg/
 ### CLI Commands
 
 - **`gtg broadcast`** - **Recommended**: Auto-discovers and broadcasts to all Telegram chats the bot is in
-- **`gtg single-chat`** - Single chat version requiring `TELEGRAM_CHAT_ID`
-- **`gtg oauth`** - OAuth-based with web authentication flow for chat monitoring
 - **`gtg get-user-id <username>`** - Convert Twitch username to user ID
 
 ### Key Architectural Patterns
@@ -84,13 +76,12 @@ Required environment variables are documented in `.env.example`. Each command re
 **All commands:**
 - `TWITCH_CLIENT_ID`, `TWITCH_CLIENT_SECRET` - Twitch app credentials
 
-**Stream monitoring commands (broadcast, single-chat, oauth):**
+**Broadcast command:**
 - `TWITCH_TARGET_USER` - Target streamer user ID to monitor
-- `TELEGRAM_BOT_TOKEN` - Telegram bot token (except oauth without Telegram)
-- `TELEGRAM_CHAT_ID` - Required only for `single-chat` command
+- `TELEGRAM_BOT_TOKEN` - Telegram bot token
 
 **Optional:**
-- `TWITCH_BOT_ID` - Enables Twitch chat monitoring (requires OAuth setup)
+- `TWITCH_BOT_ID` - Enables Twitch chat monitoring
 
 ## Code Formatting
 
@@ -99,7 +90,7 @@ The repository uses **treefmt** with Black for Python and nixfmt for Nix files. 
 ### Acceptance Criteria
 
 **Primary:** `nix fmt` succeeds (code formatting passes)
-**Secondary:** All CLI commands execute without errors in `nix develop` shell
+**Secondary:** `gtg broadcast` and `gtg get-user-id` commands execute without errors in `nix develop` shell
 
 No formal test suite exists - validation is primarily through manual testing of CLI commands.
 

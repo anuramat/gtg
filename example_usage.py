@@ -31,32 +31,6 @@ python gtg.py broadcast
 python -m gtg broadcast
 """
 
-# 3. Run single chat notifier
-"""
-export TWITCH_CLIENT_ID="your_client_id"
-export TWITCH_CLIENT_SECRET="your_client_secret" 
-export TWITCH_TARGET_USER="123456789"
-export TELEGRAM_BOT_TOKEN="your_bot_token"
-export TELEGRAM_CHAT_ID="-1001234567890"  # Your specific chat ID
-# Optional: export TWITCH_BOT_ID="your_bot_user_id"
-
-python gtg.py single-chat
-# OR
-python -m gtg single-chat
-"""
-
-# 4. Run OAuth-based notifier with web authentication
-"""
-export TWITCH_CLIENT_ID="your_client_id"
-export TWITCH_CLIENT_SECRET="your_client_secret"
-export TWITCH_BOT_ID="your_bot_user_id"  # Required for OAuth
-export TELEGRAM_BOT_TOKEN="your_bot_token"
-# Optional: export TELEGRAM_CHAT_ID="-1001234567890"
-
-python gtg.py oauth
-# OR
-python -m gtg oauth
-"""
 
 # =============================================================================
 # SETUP INSTRUCTIONS
@@ -80,8 +54,7 @@ python -m gtg oauth
 
 4. Usage:
    - Use broadcast mode for multiple chats (recommended)
-   - Use single-chat mode if you only want notifications in one specific chat
-   - Use oauth mode if you need advanced Twitch chat monitoring features
+   - Use get-user-id to convert Twitch usernames to user IDs
 """
 
 # =============================================================================
@@ -90,14 +63,10 @@ python -m gtg oauth
 
 # Old way:
 # python stream_notifier_broadcast.py
-# python stream_notifier_telegram.py
-# python stream_notifier_oauth.py
 # python get_user_id.py username
 
 # New way:
 # python gtg.py broadcast
-# python gtg.py single-chat
-# python gtg.py oauth
 # python gtg.py get-user-id username
 
 # =============================================================================

@@ -15,8 +15,6 @@ import click
 import twitchio
 
 from .commands.broadcast import run_broadcast
-from .commands.oauth import run_oauth
-from .commands.single_chat import run_single_chat
 from .core.config import load_config, validate_required
 
 
@@ -52,47 +50,6 @@ def broadcast():
 
     asyncio.run(run_broadcast())
 
-
-@cli.command()
-def single_chat():
-    """Run stream notifier for a single Telegram chat
-
-    Sends notifications to one specific chat.
-    Requires: TWITCH_CLIENT_ID, TWITCH_CLIENT_SECRET, TWITCH_TARGET_USER,
-              TELEGRAM_BOT_TOKEN, TELEGRAM_CHAT_ID
-    Optional: TWITCH_BOT_ID (enables chat monitoring)
-    """
-    required = [
-        "TWITCH_CLIENT_ID",
-        "TWITCH_CLIENT_SECRET",
-        "TWITCH_TARGET_USER",
-        "TELEGRAM_BOT_TOKEN",
-        "TELEGRAM_CHAT_ID",
-    ]
-    if not validate_required(required):
-        sys.exit(1)
-
-    asyncio.run(run_single_chat())
-
-
-@cli.command()
-def oauth():
-    """Run stream notifier with OAuth web authentication
-
-    Uses OAuth flow with web interface for authentication.
-    Requires: TWITCH_CLIENT_ID, TWITCH_CLIENT_SECRET, TWITCH_BOT_ID, TELEGRAM_BOT_TOKEN
-    Optional: TELEGRAM_CHAT_ID
-    """
-    required = [
-        "TWITCH_CLIENT_ID",
-        "TWITCH_CLIENT_SECRET",
-        "TWITCH_BOT_ID",
-        "TELEGRAM_BOT_TOKEN",
-    ]
-    if not validate_required(required):
-        sys.exit(1)
-
-    asyncio.run(run_oauth())
 
 
 @cli.command("get-user-id")
